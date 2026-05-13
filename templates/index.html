@@ -2,6 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
+<<<<<<< HEAD
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#4facfe">
     <title>ระบบวิเคราะห์เลขไทย ๔๖ – ๕๐</title>
@@ -358,11 +359,49 @@
             </div>
             <div class="status-log" id="statusText">พร้อมประมวลผลข้อมูล</div>
         </aside>
+=======
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เก็บข้อมูลตัวเลขไทย ๔๖-๕๐</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; text-align: center; background: #f5f7fb; color: #333; padding-top: 30px; }
+        .container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: inline-block; }
+        canvas { border: 2px dashed #9ca3af; border-radius: 8px; background: #ffffff; cursor: crosshair; touch-action: none; margin-bottom: 15px; }
+        .controls { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+        select, button { padding: 10px 15px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; width: 100%; max-width: 280px; }
+        button { cursor: pointer; font-weight: bold; color: white; border: none; }
+        .btn-save { background-color: #2563eb; }
+        .btn-clear { background-color: #6b7280; }
+        .status { margin-top: 10px; color: green; font-weight: bold; height: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>เขียนเลขไทย ๔๖ - ๕๐</h2>
+        
+        <!-- Space for drawing -->
+        <canvas id="drawCanvas" width="280" height="280"></canvas>
+        
+        <div class="controls">
+            <!-- Dropdown for choosing Label -->
+            <select id="labelSelect">
+                <option value="46">๔๖ (สี่สิบหก)</option>
+                <option value="47">๔๗ (สี่สิบเจ็ด)</option>
+                <option value="48">๔๘ (สี่สิบแปด)</option>
+                <option value="49">๔๙ (สี่สิบเก้า)</option>
+                <option value="50">๕๐ (ห้าสิบ)</option>
+            </select>
+            
+            <button class="btn-save" onclick="saveSample()">Save Sample</button>
+            <button class="btn-clear" onclick="clearCanvas()">Clear</button>
+        </div>
+        <div class="status" id="statusMessage"></div>
+>>>>>>> b72b90006fb4dd2a815c66f212708ca4904abad7
     </div>
 
     <script>
         const canvas = document.getElementById('drawCanvas');
         const ctx = canvas.getContext('2d');
+<<<<<<< HEAD
         const btnPredict = document.getElementById('btnPredict');
         const btnClear = document.getElementById('btnClear');
         const statusText = document.getElementById('statusText');
@@ -559,3 +598,72 @@
     </script>
 </body>
 </html>
+=======
+        let drawing = false;
+
+        // Setting up stroke style (thick lines and rounded ends for better Image Processing)
+        ctx.lineWidth = 16;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#000000';
+        
+        // Fill white background to prevent transparent image (Transparent)
+        function fillBackground() {
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        fillBackground();
+
+        // Function to get the position of the mouse or touch
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: clientX - rect.left, y: clientY - rect.top };
+        }
+
+        function startDraw(e) { drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); }
+        function draw(e) { if (!drawing) return; e.preventDefault(); const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); }
+        function stopDraw() { drawing = false; }
+
+        canvas.addEventListener('mousedown', startDraw);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDraw);
+        canvas.addEventListener('mouseout', stopDraw);
+        
+        canvas.addEventListener('touchstart', startDraw);
+        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchend', stopDraw);
+
+        function clearCanvas() {
+            fillBackground();
+            document.getElementById('statusMessage').innerText = "";
+        }
+
+        // Function to send image to Backend
+        async function saveSample() {
+            const label = document.getElementById('labelSelect').value;
+            const dataURL = canvas.toDataURL('image/png'); // แปลงภาพเป็น Base64
+            const statusEl = document.getElementById('statusMessage');
+
+            try {
+                const response = await fetch('/save-sample', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: dataURL, label: label })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    statusEl.innerText = `บันทึกสำเร็จ: ${result.filename}`;
+                    statusEl.style.color = "green";
+                    setTimeout(clearCanvas, 1000); // Clear screen automatically in 1 second
+                }
+            } catch (error) {
+                statusEl.innerText = "เกิดข้อผิดพลาดในการเชื่อมต่อ";
+                statusEl.style.color = "red";
+            }
+        }
+    </script>
+</body>
+</html>
+>>>>>>> b72b90006fb4dd2a815c66f212708ca4904abad7
