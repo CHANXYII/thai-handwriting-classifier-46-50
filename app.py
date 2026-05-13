@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import base64
 import io
 import json
@@ -307,7 +306,7 @@ def upload_model():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-=======
+
 from flask import Flask, render_template, request, jsonify
 import base64
 import os
@@ -353,4 +352,3 @@ def save_sample():
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
->>>>>>> b72b90006fb4dd2a815c66f212708ca4904abad7
