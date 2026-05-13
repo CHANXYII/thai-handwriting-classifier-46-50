@@ -1,0 +1,8 @@
+services:
+  app:
+    build: .
+    image: thai-handwriting-46-50
+    container_name: thai-handwriting-46-50
+    ports:
+      - "5050:5000"
+    restart: unless-stopped

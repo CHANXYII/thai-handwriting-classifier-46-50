@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Prediction History</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap');
+
+*{
+    box-sizing:border-box;
+}
+
+:root{
+    --stone-base:#c2b9ae;
+    --stone-light:#e0d7cd;
+    --stone-dark:#8c8278;
+    --accent-light:#f4d97a;
+    --text-main:#4e342e;
+    --font-main:'Mali', cursive;
+    --font-ui:'Prompt', sans-serif;
+}
+
+html,body{
+    margin:0;
+    min-height:100%;
+    overflow-x:hidden;
+}
+
+body{
+    font-family:var(--font-ui);
+    background:#000;
+    color:white;
+    padding:40px 20px;
+    position:relative;
+}
+
+/* VIDEO BG */
+
+#bgVideo{
+    position:fixed;
+    top:50%;
+    left:50%;
+    min-width:100%;
+    min-height:100%;
+    transform:translate(-50%,-50%);
+    object-fit:cover;
+    z-index:-2;
+    filter:brightness(0.7) contrast(1.1);
+}
+
+body::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    background:linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.15),
+        rgba(0,0,0,0.7)
+    );
+    z-index:-1;
+}
+
+.container{
+    width:40%;
+    max-width:1200px;
+    margin:-10px auto 0 auto;
+    display:flex;
+    flex-direction:column;
+    gap:25px;
+}
+
+.app-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 120px;
+            padding-top: 70px;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-bottom: 20px;
+}
+
+/* HEADER */
+
+
+.top-nav{
+    width:100%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    position:absolute;
+    top:30px;
+    left:0;
+    padding:0 40px;
+    z-index:10;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+.app-title{
+    font-family: var(--font-main);
+    color: white;
+    text-shadow: 0 4px 15px rgba(0,0,0,0.8), 0 0 20px rgba(100, 181, 246, 0.4);
+    font-size: 20px;
+    margin: 0 0 20px 0;
+    text-align: center;
+    line-height: 1;
+}
+
+.app-title span{
+    display:block;
+    font-family:var(--font-ui);
+    font-size:18px;
+    letter-spacing:8px;
+    color:white;
+    opacity:0.9;
+    margin-bottom:12px;
+}
+
+.app-title h1{
+    margin:0;
+    font-family:var(--font-main);
+    font-size:clamp(72px, 5vw, 92px);
+    line-height:1.05;
+    color:white;
+    text-shadow:
+        0 4px 15px rgba(0,0,0,0.8),
+        0 0 20px rgba(100,181,246,0.35);
+}
+
+.main-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* BUTTON */
+
+.btn-3d{
+    background-color:var(--stone-base);
+
+    background-image:
+        linear-gradient(
+            to bottom,
+            var(--stone-light),
+            var(--stone-base)
+        );
+
+    border:none;
+    padding:14px 28px;
+    font-family:var(--font-main);
+    font-size:20px;
+    font-weight:700;
+
+    color:var(--text-main);
+
+    border-radius:18px;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 10px 0 var(--stone-dark),
+        0 15px 25px rgba(0,0,0,0.45);
+
+    transition:0.1s;
+}
+
+.btn-3d:active{
+    transform:translateY(8px);
+
+    box-shadow:
+        0 2px 0 var(--stone-dark);
+}
+
+/* GRID */
+
+.history-grid{
+    display:flex;
+    flex-direction:column;
+    gap:24px;
+}
+
+/* CARD */
+
+.card{
+    width:100%;
+    background:rgba(78,52,46,0.92);
+    border-radius:28px;
+    padding:24px;
+    backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,0.12);
+    box-shadow:
+        0 20px 40px rgba(0,0,0,0.45);
+    transition:0.25s;
+}
+
+.card:hover{
+    transform:translateY(-4px);
+}
+
+/* CARD TITLE */
+
+.card-title{
+    font-family:var(--font-main);
+    font-size:28px;
+    color:var(--accent-light);
+    margin-bottom:18px;
+
+    text-shadow:
+        0 0 12px rgba(255,212,56,0.4);
+}
+
+/* ROW */
+
+.row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:10px 0;
+
+    border-bottom:1px solid rgba(255,255,255,0.08);
+}
+
+.row:last-child{
+    border-bottom:none;
+}
+
+.label{
+    color:#d7ccc8;
+    font-size:14px;
+}
+
+.value{
+    font-weight:600;
+    color:white;
+}
+
+/* STATUS */
+
+.status{
+    padding:8px 14px;
+    border-radius:999px;
+    font-size:14px;
+    font-weight:700;
+}
+
+.correct{
+    background:rgba(76,175,80,0.2);
+    color:#81ff98;
+}
+
+.wrong{
+    background:rgba(244,67,54,0.2);
+    color:#ff9e9e;
+}
+
+.pending{
+    background:rgba(255,193,7,0.15);
+    color:#ffe082;
+}
+
+/* EMPTY */
+
+.empty{
+    text-align:center;
+    padding:80px 20px;
+    color:rgba(255,255,255,0.5);
+    font-size:18px;
+}
+
+@media(max-width:700px){
+
+    .title h1{
+        font-size:34px;
+    }
+
+    .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<video autoplay muted loop playsinline id="bgVideo">
+    <source src="/static/ธรรมชาติ2.mp4" type="video/mp4">
+</video>
+
+    <div class="app-container">
+        <main class="main-content">
+            <div class="top-nav">
+                <button class="btn-3d" onclick="window.location.href='/admin'">◀ Admin</button>
+                <button class="btn-3d" onclick="window.location.href='/'"> User ▶ </button>
+            </div>
+            <div class="app-title">
+                <h1>ประวัติการทำนาย</h1>
+            </div>
+</div>
+
+<div class="container">
+    <div class="history-grid" id="historyContainer"></div>
+</div>
+
+<script>
+
+async function loadHistory(){
+
+    const response =
+        await fetch('/history/data');
+
+    const data =
+        await response.json();
+
+    const container =
+        document.getElementById('historyContainer');
+
+    container.innerHTML = '';
+
+    if(data.length === 0){
+
+        container.innerHTML = `
+            <div class="empty">
+                ยังไม่มีประวัติการทำนาย
+            </div>
+        `;
+
+        return;
+    }
+
+    data.reverse().forEach(item => {
+
+        let statusHTML = '';
+
+        if(item.correct === true){
+
+            statusHTML = `
+                <span class="status correct">
+                    ✅ ทายถูก
+                </span>
+            `;
+
+        }else if(item.correct === false){
+
+            statusHTML = `
+                <span class="status wrong">
+                    ❌ ทายผิด
+                </span>
+            `;
+
+        }else{
+
+            statusHTML = `
+                <span class="status pending">
+                    ⏳ ยังไม่ประเมิน
+                </span>
+            `;
+        }
+
+        const div =
+            document.createElement('div');
+
+        div.className = 'card';
+
+        div.innerHTML = `
+
+            <div class="card-title">
+                เลข ${item.prediction}
+            </div>
+
+            <div class="row">
+                <span class="label">
+                    ทำนายเป็น
+                </span>
+
+                <span class="value">
+                    ${item.prediction}
+                </span>
+            </div>
+
+            <div class="row">
+                <span class="label">
+                    Confidence
+                </span>
+
+                <span class="value">
+                    ${(item.confidence * 100).toFixed(2)}%
+                </span>
+            </div>
+
+            <div class="row">
+                <span class="label">
+                    Status
+                </span>
+
+                ${statusHTML}
+            </div>
+
+            <div class="row">
+                <span class="label">
+                    Time
+                </span>
+
+                <span class="value">
+                    ${item.time}
+                </span>
+            </div>
+        `;
+
+        container.appendChild(div);
+
+    });
+
+}
+
+loadHistory();
+
+</script>
+
+</body>
+</html>

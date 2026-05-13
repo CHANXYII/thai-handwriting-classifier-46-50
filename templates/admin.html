@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin</title>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap');
+
+* { box-sizing: border-box; }
+        
+        :root {
+            --stone-base: #c2b9ae;
+            --stone-light: #e0d7cd;
+            --stone-dark: #8c8278;
+            --stone-border: #756a5e;
+            --accent-base: #c9a227;
+            --accent-light: #f4d97a;
+            --accent-glow: #ffefb0;
+            --accent-text: #4e342e;
+            --ink: #3e2723;
+            --text-main: #4e342e;
+            --font-main: 'Mali', cursive;
+            --font-ui: 'Prompt', sans-serif;
+        }
+
+        html, body { height: 100%; margin: 0; overflow: hidden; }
+
+        body {
+            font-family: var(--font-ui);
+            color: rgb(33, 10, 10);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #000;
+        }
+
+/* Video Background */
+        #bgVideo {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1;
+            transform: translateX(-50%) translateY(-50%);
+            object-fit: cover;
+            filter: brightness(0.7) contrast(1.1);
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.6));
+            z-index: 0;
+        }
+
+        .app-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        /* --- Main Stage --- */
+        .main-content{
+            width: 100%;
+            min-height:90vh;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top:70px;
+        }
+
+        .top-nav{
+            width:100%;
+            max-width:1470px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            position:absolute;
+            top:30px;
+            padding:0 40px;
+            z-index:10;
+        }
+
+        .app-title {
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+
+            text-align:center;
+
+            margin-top:-10px;
+            margin-bottom:30px;;
+        }
+
+        .app-title span {
+            display: block;
+            font-size: 0.4em;
+            font-family: var(--font-ui);
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .app-title h1{
+            margin:0;
+            font-family:var(--font-main);
+            font-size:clamp(72px, 5vw, 92px);
+            line-height:1.05;
+            color:white;
+            text-shadow:
+                0 4px 15px rgba(0,0,0,0.8),
+                0 0 20px rgba(100, 181, 246, 0.4);
+        }
+
+/* --- 3D Buttons --- */
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .btn-3d{
+            background-color:var(--stone-base);
+
+            background-image:
+                linear-gradient(
+                    to bottom,
+                    var(--stone-light),
+                    var(--stone-base)
+                );
+
+            border:none;
+            padding:14px 28px;
+            font-family:var(--font-main);
+            font-size:20px;
+            font-weight:700;
+
+            color:var(--text-main);
+
+            border-radius:18px;
+
+            cursor:pointer;
+
+            box-shadow:
+                0 10px 0 var(--stone-dark),
+                0 15px 25px rgba(0,0,0,0.45);
+
+            transition:0.1s;
+        }
+
+        .btn-3d:active{
+            transform:translateY(8px);
+
+            box-shadow:
+                0 2px 0 var(--stone-dark);
+        }
+
+
+/* --- bar --- */
+
+        .container{
+            width:100%;
+            max-width:530px;
+            
+            display:flex;
+            flex-direction:column;
+
+            align-items:center;
+
+            gap:18px;
+
+            margin-top:-10px;
+        }
+
+
+        .sidebar {
+            width: 340px;
+            margin-top:40px;
+
+            background: #4e342e;
+            backdrop-filter: blur(20px);
+
+            border-radius: 25px;
+            border: 1px solid rgba(255,255,255,0.15);
+
+            padding: 25px;
+
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+
+            box-shadow: -20px 0 50px rgba(0,0,0,0.5);
+        }
+
+        .panel-section {
+            width:100%;
+            background:rgba(78,52,46,0.92);
+            border-radius:20px;
+            padding:26px 24px;
+            backdrop-filter:blur(18px);
+            border:1px solid rgba(255,255,255,0.12);
+            box-shadow:
+                0 20px 40px rgba(0,0,0,0.45);
+            transition:0.25s;
+        }
+
+
+        .panel-section:hover{
+            transform:translateY(-4px);
+
+            box-shadow: 0 30px 60px rgba(0,0,0,0.45);
+        }
+
+        .section-title {
+            font-family: var(--font-main);
+            color: rgb(255, 255, 255);
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+
+        input{
+            width:100%;
+            padding:14px;
+            border:none;
+            border-radius:12px;
+            margin-bottom:15px;
+            background:rgba(255,255,255,0.08);
+            color:white;
+            font-size:16px;
+        }
+
+        input::placeholder{
+            color:#ccc;
+        }
+
+        .select-label{
+            width:100%;
+            padding:14px;
+            border:none;
+            border-radius:12px;
+            margin-bottom:15px;
+            background:rgba(255,255,255,0.08);
+            color:white;
+            font-size:16px;
+            font-family: var(--font-main);
+            outline:none;
+            cursor: pointer;
+            border:1px solid rgba(255,255,255,0.2);
+        }
+
+        .select-label option{
+            color:black;
+        }
+
+        .status{
+            text-align:center;
+            margin-top:10px;
+            color:#f4d97a;
+        }
+
+        .status-log{
+            width:100%;
+            margin-top:26px;
+            margin-bottom:-4px;
+            
+            text-align:center;
+
+            font-size:13px;
+            color:rgba(255,255,255,0.4);
+
+            transition:0.3s;
+        }
+
+        .status-log.busy { color: rgba(255,255,255,0.4); animation: pulse 1s infinite; }
+        @keyframes pulse { 50% { opacity: 0.5; } }
+
+        @media (max-width: 900px) {
+            .app-container { flex-direction: column; height: auto; padding: 10px; }
+            .sidebar { width: 100%; max-width: 440px; }
+            .stone-board { width: 100%; max-width: 360px; }
+}
+
+
+</style>
+</head>
+<body>
+
+    <video autoplay muted loop playsinline id="bgVideo">
+        <source src="/static/ธรรมชาติ2.mp4" type="video/mp4">
+    </video>
+
+    <div class="app-container">
+        <main class="main-content">
+            <div class="top-nav">
+                <button class="btn-3d" onclick="window.location.href='/'">◀ User</button>
+                <button class="btn-3d" onclick="window.location.href='/history'">ประวัติ ▶</button>
+            </div>
+            <div class="app-title">
+                <h1>Admin Panel</h1>
+            </div>
+
+    <!-- SIDEBAR -->
+        <div class="container">
+                <div class="panel-section">
+
+                    <div class="section-title">นำเข้าโมเดลใหม่</div>
+                    <input type="file" id="modelInput" accept=".pt">
+                    <button class="btn-3d" id="btnUploadModel" style="width:100%; margin-top:10px;">Upload Model</button>
+                    <div class="status-log" id="statusText"> พร้อมจัดการโมเดล </div>
+                </div>          
+                
+        </div>
+
+        </main>
+        </div>
+
+<script>
+        const statusText = document.getElementById('statusText');
+        
+        
+        function setStatus(msg, busy = false) {
+            statusText.textContent = msg;
+            statusText.className = 'status-log' + (busy ? ' busy' : '');
+        }
+
+        const btnUploadModel = document.getElementById('btnUploadModel');btnUploadModel.addEventListener('click', async () => {
+        const file = document.getElementById('modelInput').files[0];
+
+        if(!file){setStatus('กรุณาเลือกไฟล์โมเดล');return;}
+
+        const formData = new FormData(); formData.append('model', file);
+
+        try{
+
+            setStatus('กำลังอัปโหลดโมเดล...', true);
+
+            const response = await fetch('/admin/upload-model', {method:'POST',body:formData});
+            const data = await response.json();
+
+            if(data.success){
+                setStatus('เปลี่ยนโมเดลสำเร็จ');
+
+            }else{
+                setStatus(data.error);
+        }
+
+        }catch(err){
+
+            setStatus('Upload ไม่สำเร็จ');
+        }
+
+    });
+
+
+</script>
+
+</body>
+</html>
